@@ -1,5 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import simpy as sim
+
+#Initialize environment
+env = sim.Environment()
 
 #Sim Variables
 dim_of_box = 30
@@ -8,14 +12,7 @@ dt = 0.1
 cutoff_dist = 10
 m=1
 
-#Set up Figure
-plt.rcParams["figure.figsize"] = [dim_of_box, dim_of_box]
-plt.rcParams["figure.autolayout"] = True
-fig = plt.figure()
-ax = fig.add_subplot()
-circle1 = plt.Circle((0.2, 0.2), radius=0.1, color='green')
-ax.add_patch(circle1)
-ax.axis('equal')
+
 
 #Set up distance (Nx2), angle, force arrays (NxN), and charge (Nx1)
 dist_initial = np.random.random((num_part,2))
@@ -60,4 +57,15 @@ for i in range(num_part):
         forc[i,j] = forcfunc(disp, ang[i,j], char[i],char[j])
         accel = forc[i,j]/m
         vel_arr[i,0] = vel_arr[i,0] + accel*dt
-        
+
+class Particle:
+    
+    def __init__(self,charge,mass, posx, posy,env) -> None:
+        self.chg = charge
+        self.m = mass
+        position = np.array((2,1))
+        position[0] = posx
+        position[1] = posy
+        self.pos = position
+        self.env = env 
+        pass
