@@ -1,8 +1,14 @@
-from coul_sim import params
-from coul_sim.model import Simulation
-from coul_sim.viewcontroller import ViewController
+
+import params
+from model import Simulation
+from viewcontroller import ViewController
+
+#Dependencies
+#math --> pi, cos, sin, atan2
+#random --> getrandbit, random, randint
+#turtle
+#typing --> List 
     
-        
         
         
         
@@ -10,7 +16,7 @@ from coul_sim.viewcontroller import ViewController
 
 #Setting up animation
 def main() -> None:
-    model = Model(params.PARTICLE_COUNT, params.PARTICLE_SPEED)
+    model = Simulation(params.PARTICLE_COUNT)
     vc = ViewController(model)
     vc.start_simulation()
     

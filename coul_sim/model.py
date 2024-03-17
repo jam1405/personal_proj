@@ -1,27 +1,47 @@
 from __future__ import annotations
-from coul_sim import params
-import numpy as np
+import params
 from typing import List
 import random
-
+from math import pi, cos, sin, atan2, sqrt
 __author__ = 'Jamie Farquharson'
 
-def forcfunc(d:float, a:float, c1:int, c2:int, m, cutoff_dist: float) --> float:
+def forcfunc(d:float, a:float, c1:bool, c2:bool, m, cutoff_dist: float) -> float:
+    
+    #No force is far enough away
     if d > cutoff_dist:
         return 0,0
+    
+    #No force if same particle
+    elif d == 0:
+        return 0, 0
+    
     else: 
-        f = c1*c2/(d^2)
-        fx = f*np.cos(a)/m
-        fy = f*np.sin(a)/m
-        return fx, fy
+        #Calculate Strength of force
+        f = params.STRENGTH/(d**2)
+        ax = f*cos(a)/m
+        ay = f*sin(a)/m
+        
+        if d < params.PARTICLE_RADIUS:
+            return -ax*params.REPULSION_STRENGTH/d, -ay*params.REPULSION_STRENGTH/d
+        
+        #Check if particles repel or attract
+        if c1 == c2:
+            return ax, ay
+        else: 
+            return -ax, -ay 
     
 def anglefunc(x,y)-> float: #Finds angle between points based on x-diff and y-diff
-    ang_temp = np.arctan2(y/x)
-    if ang_temp < 0:
-        ang_fin = 2*np.pi - ang_temp
+    if x == 0 and y >=0:
+        return pi/2
+    elif x==0 and y < 0:
+        return 3*pi/2
     else:
-        ang_fin = ang_temp
-    return ang_fin
+        ang_temp = atan2(y,x)
+       # if ang_temp < 0:
+        #    ang_fin = 2*pi - ang_temp
+        #else:
+         #   ang_fin = ang_temp
+        return ang_temp
 
 class Point:
     #General Point in 2D Grid
@@ -32,14 +52,7 @@ class Point:
         self.x = x
         self.y = y
     
-    def disp(self, other: Point):
-        x_diff = self.x - other.x
-        y_diff = self.y - other.y
-        disp: float = np.sqrt(abs(x_diff)**2 + abs(y_diff)**2)
-        ang: float = anglefunc(x_diff, y_diff)
-        return disp, ang
-    
-    def add(self, other: Point):
+    def add(self, other: Point)-> Point:
         x: float = self.x + other.x
         y: float = self.y + other.y
         return Point(x,y)
@@ -50,25 +63,46 @@ class Particle:
     location: Point
     vel: Point
     
-    def __init__(self, m:int, c:int) -> None:
-        location: Point
+    def __init__(self, loc:Point, vel: Point, m:int) -> None:
+        loc: Point
         vel: Point
         self.m = m
-        self.c = c 
-        self.loc = location
+        self.c = bool(random.getrandbits(1))
+        self.loc = loc
         self.vel = vel
           
-    def interact(self, other: Particle, cutoff_dist):
-        x_diff = self.x - other.x
-        y_diff = self.y - other.y
-        disp = np.sqrt(abs(x_diff)**2 + abs(y_diff)**2)
+    def interact(self, other: Particle, cutoff_dist:float):
+        x_diff = self.loc.x - other.loc.x
+        y_diff = self.loc.y - other.loc.y
+        disp = sqrt(abs(x_diff)**2 + abs(y_diff)**2)
+        cut = cutoff_dist
+        otherc = other.c
+        selfc = self.c
         ang = anglefunc(x_diff, y_diff)
-        fx, fy = forcfunc(disp, ang, self.c, other.c, cutoff_dist)
-        return fx, fy
+        
+        ax, ay = forcfunc(d=disp, a =ang, c1=selfc, c2=otherc, m=self.m, cutoff_dist=cut)
+        return ax, ay
     
+    def tick(self, population,num_part):
+        #Reset Accelerations to 0
+        ax_tot: float = 0
+        ay_tot: float = 0
+        
+        #Sum acceleration from each other particle
+        for i in range(0,num_part):
+            sing_ax, sing_ay = self.interact(population[i],params.CUTOFF_DIST) 
+            ax_tot += sing_ax
+            ay_tot += sing_ay
+        
+        #Change location based on current velocity with change in acceleration over our TIME_STEP param
+        self.vel.x += ax_tot*params.TIME_STEP
+        self.vel.y += ay_tot*params.TIME_STEP
+        self.loc.x += self.vel.x*params.TIME_STEP
+        self.loc.y += self.vel.y*params.TIME_STEP
+        
     #Colour depending on Charge
     def color(self) -> str:
-        if self.c > 0:
+        if self.c:
             return "red"
         else:
             return "blue"
@@ -78,17 +112,26 @@ class Simulation:
     population: List[Particle]
     time: int = 0
     
-    def __init__(self, particles: int, speed:float) -> None:
+    #Initialize Population with random locations and velocities
+    def __init__(self, particles: int) -> None:
         self.population = []
-        
-    #ADVANCE TIME
+        for n in range(0, particles):
+            init_loc = self.random_loc()
+            init_vel = self.random_vel()
+            temp: Particle = Particle(init_loc, init_vel, params.MASS)
+            self.population.append(temp)
+    
+    #ADVANCE TIME, cause tick update for each particle
     def tick(self):
         self.time += 1
+        for particle in self.population:
+            particle.tick(self.population, len(self.population))
+            self.boundary_lim(particle)
         
     #RANDOM START LOCATION
     def random_loc(self) -> Point:
-        x = random.random() * params.BOUNDS_WIDTH
-        y = random.random() * params.BOUNDS_HEIGHT
+        x = random.random() * params.BOUNDS_WIDTH - params.MAX_X
+        y = random.random() * params.BOUNDS_HEIGHT - params.MAX_Y
         
         return Point(x, y)
     
@@ -100,8 +143,23 @@ class Simulation:
     
     #Bounces off boundaries
     def boundary_lim(self, particle: Particle):
+        #Check X Bounds
+        if particle.loc.x > params.MAX_X:
+            particle.loc.x = params.MAX_X
+            particle.vel.x = -particle.vel.x
+        elif particle.loc.x < -params.MAX_X:
+            particle.loc.x = -params.MAX_X
+            particle.vel.x = -particle.vel.x
         
+        #Check Y Bounds
+        if particle.loc.y > params.MAX_Y:
+            particle.loc.y = params.MAX_Y
+            particle.vel.y = -particle.vel.y
+        elif particle.loc.y < -params.MAX_Y:
+            particle.loc.y = -params.MAX_Y
+            particle.vel.y = -particle.vel.y
         return
+
     
     def is_complete(self) -> bool:
         if self.time > params.SIM_TIME:

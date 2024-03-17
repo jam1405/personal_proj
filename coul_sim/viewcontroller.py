@@ -1,6 +1,6 @@
 from turtle import Turtle, Screen, done
-from coul_sim.model import Simulation
-from coul_sim import params
+from model import Simulation
+import params
 from typing import Any
 from time import time_ns
 
@@ -37,10 +37,10 @@ class ViewController:
         self.pen.clear()
         for particle in self.model.population:
             self.pen.penup()
-            self.pen.goto(particle.location.x, particle.location.y)
+            self.pen.goto(particle.loc.x, particle.loc.y)
             self.pen.pendown()
-            self.pen.color(cell.color())
-            self.pen.dot(constants.CELL_RADIUS)
+            self.pen.color(particle.color())
+            self.pen.dot(params.PARTICLE_RADIUS)
         self.screen.update()
 
         if self.model.is_complete():
