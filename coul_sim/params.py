@@ -12,10 +12,10 @@ VIEW_HEIGHT: int = BOUNDS_HEIGHT + 20
 
 PARTICLE_RADIUS: int = 10
 PARTICLE_COUNT: int = int(input("How many particles would you like in the box? (INTEGER)"))
-CUTOFF_DIST:float = 50
+CUTOFF_DIST:float = 70
 MAX_SPEED: float = 1
-SIM_TIME: int = 1000
-TIME_STEP:float = 0.2
+SIM_TIME: int = 4000
+TIME_STEP:float = 0.3
 MASS = 1
-STRENGTH = 200
-REPULSION_STRENGTH = 0.001
+STRENGTH = 100
+REPULSION_STRENGTH = 0
