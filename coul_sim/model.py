@@ -105,10 +105,10 @@ class Particle:
             ay_tot += sing_ay
         
         #Change location based on current velocity with change in acceleration over our TIME_STEP param
-        self.vel.x += ax_tot*params.TIME_STEP
-        self.vel.y += ay_tot*params.TIME_STEP
-        self.loc.x += self.vel.x*params.TIME_STEP
-        self.loc.y += self.vel.y*params.TIME_STEP
+        self.vel.x = self.vel.x + ax_tot*params.TIME_STEP
+        self.vel.y = self.vel.y + ay_tot*params.TIME_STEP
+        self.loc.x = self.vel.x*params.TIME_STEP
+        self.loc.y = self.vel.y*params.TIME_STEP
         
     #Colour depending on Charge
     def color(self) -> str:
