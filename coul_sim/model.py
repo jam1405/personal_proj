@@ -21,7 +21,11 @@ def forcfunc(d:float, a:float, c1:bool, c2:bool, m, cutoff_dist: float) -> float
         ax = f*cos(a)/m
         ay = f*sin(a)/m
         
+<<<<<<< HEAD
         if(d < params.PARTICLE_RADIUS):
+=======
+        if d < 2*params.PARTICLE_RADIUS:
+>>>>>>> af9fe0664e64b9181894c87cd7f24b6db51cf531
             return -ax*params.REPULSION_STRENGTH/d, -ay*params.REPULSION_STRENGTH/d
         
         #Check if particles repel or attract
@@ -75,13 +79,18 @@ class Particle:
         x_diff = self.loc.x - other.loc.x
         y_diff = self.loc.y - other.loc.y
         disp = sqrt(abs(x_diff)**2 + abs(y_diff)**2)
-        cut = cutoff_dist
-        otherc = other.c
-        selfc = self.c
-        ang = anglefunc(x_diff, y_diff)
+        if disp < 0.8*params.PARTICLE_RADIUS:
+            ax = params.REPULSION_STRENGTH*x_diff
+            ay = params.REPULSION_STRENGTH*y_diff
+            return ax, ay 
+        else:
+            cut = cutoff_dist
+            otherc = other.c
+            selfc = self.c
+            ang = anglefunc(x_diff, y_diff)
         
-        ax, ay = forcfunc(d=disp, a =ang, c1=selfc, c2=otherc, m=self.m, cutoff_dist=cut)
-        return ax, ay
+            ax, ay = forcfunc(d=disp, a =ang, c1=selfc, c2=otherc, m=self.m, cutoff_dist=cut)
+            return ax, ay
     
     def tick(self, population,num_part):
         #Reset Accelerations to 0
@@ -90,7 +99,8 @@ class Particle:
         
         #Sum acceleration from each other particle
         for i in range(0,num_part):
-            sing_ax, sing_ay = self.interact(population[i],params.CUTOFF_DIST) 
+            sing_ax, sing_ay= self.interact(population[i],params.CUTOFF_DIST) 
+            
             ax_tot += sing_ax
             ay_tot += sing_ay
         
