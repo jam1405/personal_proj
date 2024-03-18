@@ -116,7 +116,7 @@ def SetPBoundary(space,left,right,top,bottom):
         space.p[:,0]=left.value
     elif(left.type=="N"):
         space.p[:,0]=-left.value*space.dx+space.p[:,1]
-    
+        
     if(right.type=="D"):
         space.p[1,-1]=right.value
     elif(right.type=="N"):
@@ -134,14 +134,14 @@ def SetPBoundary(space,left,right,top,bottom):
 
 def SetTimeStep(CFL,space,fluid):
     with np.errstate(divide='ignore'):
-        dt=CFL/np.sum([np.amax(space.u)/space.dx,\
-                           np.amax(space.v)/space.dy])
+        dt=CFL/np.sum([np.amax(space.u)/space.dx, np.amax(space.v)/space.dy])
+    
     #Escape condition if dt is infinity due to zero velocity initially
     if np.isinf(dt):
         dt=CFL*(space.dx+space.dy)
     space.dt=dt
 
-def GetStarredVelocities(space,fluid):
+def GetStarredVelocities(space:Space,fluid:Fluid):
     #Save object attributes as local variable with explicity typing for improved readability
     rows=int(space.rowpts)
     cols=int(space.colpts)
@@ -182,7 +182,7 @@ def GetStarredVelocities(space,fluid):
     
 #The second function is used to iteratively solve the pressure Possion equation from the starred velocities 
 #to calculate pressure at t+delta_t
-def SolvePressurePoisson(space,fluid,left,right,top,bottom):
+def SolvePressurePoisson(space:Space,fluid:Fluid,left,right,top,bottom):
     #Save object attributes as local variable with explicity typing for improved readability
     rows=int(space.rowpts)
     cols=int(space.colpts)
@@ -229,7 +229,7 @@ def SolvePressurePoisson(space,fluid,left,right,top,bottom):
             
     
 #The third function is used to calculate the velocities at timestep t+delta_t using the pressure at t+delta_t and starred velocities
-def SolveMomentumEquation(space,fluid):
+def SolveMomentumEquation(space:Space,fluid:Fluid):
     #Save object attributes as local variable with explicity typing for improved readability
     rows=int(space.rowpts)
     cols=int(space.colpts)

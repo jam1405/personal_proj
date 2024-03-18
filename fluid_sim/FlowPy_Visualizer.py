@@ -16,6 +16,7 @@ breadth=FlowPy_Input.breadth
 cwdir=os.getcwd()
 dir_path=os.path.join(cwdir,"Result")
 os.chdir(dir_path)
+
 #Go through files in the directory and store filenames
 filenames=[]
 iterations=[]
@@ -26,6 +27,7 @@ for root,dirs,files in os.walk(dir_path):
             no_ext_file=datafile.replace(".txt","").strip()
             iter_no=int(no_ext_file.split("V")[-1])
             iterations.append(iter_no)
+
 #Discern the final iteration and interval
 initial_iter=np.amin(iterations)            
 final_iter=np.amax(iterations)
@@ -110,9 +112,10 @@ def animate(i):
                          color="k")
     return cont,stream
 
-print("######## Making FlowPy Animation ########")
+print("\n######## Making FlowPy Animation ########")
 print("#########################################")
 anim=ani.FuncAnimation(fig,animate,frames=number_of_frames,interval=50,blit=False)
-movie_path=os.path.join(dir_path,"FluidFlowAnimation.mp4")
-anim.save(r"{0}".format(movie_path))
-print("\nAnimation saved as FluidFlowAnimation.mp4 in Result")
+movie_path=os.path.join(dir_path,"FluidFlowAnimation.gif")
+writergif = ani.PillowWriter(fps=30)
+anim.save(r"{0}".format(movie_path),writer = writergif)
+print("\nAnimation saved as FluidFlowAnimation.gif in Result")
