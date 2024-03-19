@@ -21,11 +21,7 @@ def forcfunc(d:float, a:float, c1:bool, c2:bool, m, cutoff_dist: float) -> float
         ax = f*cos(a)/m
         ay = f*sin(a)/m
         
-<<<<<<< HEAD
         if(d < params.PARTICLE_RADIUS):
-=======
-        if d < 2*params.PARTICLE_RADIUS:
->>>>>>> af9fe0664e64b9181894c87cd7f24b6db51cf531
             return -ax*params.REPULSION_STRENGTH/d, -ay*params.REPULSION_STRENGTH/d
         
         #Check if particles repel or attract
