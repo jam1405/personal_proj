@@ -21,11 +21,11 @@ def forcfunc(d:float, a:float, c1:bool, c2:bool, m, cutoff_dist: float) -> float
         ax = f*cos(a)/m
         ay = f*sin(a)/m
         
-        if d < 2*params.PARTICLE_RADIUS:
-            return -ax*params.REPULSION_STRENGTH/d, -ay*params.REPULSION_STRENGTH/d
+        if d < 1.1*params.PARTICLE_RADIUS:
+            return -ax*params.REPULSION_STRENGTH/(2*d-params.PARTICLE_RADIUS), -ay*params.REPULSION_STRENGTH/(2*d- params.PARTICLE_RADIUS)
         
         #Check if particles repel or attract
-        if c1 == c2:
+        elif c1 == c2:
             return ax, ay
         else: 
             return -ax, -ay 
@@ -75,7 +75,7 @@ class Particle:
         x_diff = self.loc.x - other.loc.x
         y_diff = self.loc.y - other.loc.y
         disp = sqrt(abs(x_diff)**2 + abs(y_diff)**2)
-        if disp < 0.8*params.PARTICLE_RADIUS:
+        if disp < 0.9*params.PARTICLE_RADIUS:
             ax = params.REPULSION_STRENGTH*x_diff
             ay = params.REPULSION_STRENGTH*y_diff
             return ax, ay 
@@ -135,16 +135,21 @@ class Simulation:
             self.boundary_lim(particle)
         
     #RANDOM START LOCATION
-    def random_loc(self) -> Point:
-        x = random.random() * params.BOUNDS_WIDTH - params.MAX_X
-        y = random.random() * params.BOUNDS_HEIGHT - params.MAX_Y
-        
+    @staticmethod
+    def random_loc(x = None) -> Point:
+        if x is None:
+            
+            x = random.random()*params.BOUNDS_WIDTH - params.MAX_X
+            y = random.random()*params.BOUNDS_HEIGHT - params.MAX_Y
         return Point(x, y)
     
     #RANDOM START VELOCITY
-    def random_vel(self) -> Point:
-        x_vel = random.random() * params.MAX_SPEED
-        y_vel = random.random() * params.MAX_SPEED
+    @staticmethod
+    def random_vel(x=None) -> Point:
+        if x is None:
+            
+            x_vel = (random.random()-0.5)*params.MAX_SPEED
+            y_vel = (random.random()-0.5)*params.MAX_SPEED
         return Point(x_vel, y_vel)
     
     #Bounces off boundaries
