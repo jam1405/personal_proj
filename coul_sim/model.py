@@ -12,7 +12,7 @@ def forcfunc(d:float, a:float, c1:bool, c2:bool, m, cutoff_dist: float) -> float
         return 0,0
     
     #No force if same particle
-    elif d == 0:
+    elif(d == 0):
         return 0, 0
     
     else: 
@@ -31,9 +31,9 @@ def forcfunc(d:float, a:float, c1:bool, c2:bool, m, cutoff_dist: float) -> float
             return -ax, -ay 
     
 def anglefunc(x,y)-> float: #Finds angle between points based on x-diff and y-diff
-    if x == 0 and y >=0:
+    if(x == 0 and y >=0):
         return pi/2
-    elif x==0 and y < 0:
+    elif( x==0 and y < 0):
         return 3*pi/2
     else:
         ang_temp = atan2(y,x)
@@ -108,7 +108,7 @@ class Particle:
         
     #Colour depending on Charge
     def color(self) -> str:
-        if self.c:
+        if(self.c):
             return "red"
         else:
             return "blue"
@@ -155,25 +155,25 @@ class Simulation:
     #Bounces off boundaries
     def boundary_lim(self, particle: Particle):
         #Check X Bounds
-        if particle.loc.x > params.MAX_X:
+        if(particle.loc.x > params.MAX_X):
             particle.loc.x = params.MAX_X
             particle.vel.x = -particle.vel.x
-        elif particle.loc.x < -params.MAX_X:
+        elif(particle.loc.x < -params.MAX_X):
             particle.loc.x = -params.MAX_X
             particle.vel.x = -particle.vel.x
         
         #Check Y Bounds
-        if particle.loc.y > params.MAX_Y:
+        if(particle.loc.y > params.MAX_Y):
             particle.loc.y = params.MAX_Y
             particle.vel.y = -particle.vel.y
-        elif particle.loc.y < -params.MAX_Y:
+        elif( particle.loc.y < -params.MAX_Y):
             particle.loc.y = -params.MAX_Y
             particle.vel.y = -particle.vel.y
         return
 
     
     def is_complete(self) -> bool:
-        if self.time > params.SIM_TIME:
+        if(self.time > params.SIM_TIME):
             return True
         else: 
             return False
