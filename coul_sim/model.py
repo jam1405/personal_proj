@@ -136,8 +136,8 @@ class Simulation:
         
     #RANDOM START LOCATION
     def random_loc(self) -> Point:
-        x = random.random() * params.BOUNDS_WIDTH - params.MAX_X
-        y = random.random() * params.BOUNDS_HEIGHT - params.MAX_Y
+        x = random.random()*params.BOUNDS_WIDTH - params.MAX_X
+        y = random.random()*params.BOUNDS_HEIGHT - params.MAX_Y
         
         return Point(x, y)
     

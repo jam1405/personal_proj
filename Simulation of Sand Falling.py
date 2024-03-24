@@ -1,4 +1,4 @@
-#Simulation of Sand Falling
+500#Simulation of Sand Falling
 #   A number of sand particles are dropped into a triangular basin
 #   Within the basin are a number of levels, with each level having an increasing number of pins for the sand to bounce off of
 #   1st level = 1 pin, 2nd level = 2pins, 3rd level = 4pins
@@ -6,7 +6,7 @@
 #   Each pin causes a 50/50 random split of sand trajectories
 #   Sand ends up in one of many final bins, Bins(level) = level + 1   
 
-#Packages 
+#Packages
 import random as r
 import numpy as np
 import matplotlib.pyplot as plt
