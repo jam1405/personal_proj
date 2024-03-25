@@ -1,31 +1,40 @@
-#Test
-from __future__ import annotations
-import numpy as np
-class Vec3():
-    def __init__(self, x:float , y:float, z:float) -> None:
-        self.vec3 = np.array([x,y,z], dtype= float)
-        self.uvec = np.linalg.norm(self.vec3)
-        return
-    
-    #Find difference between 3D vectors -- for finding displacement between planets
-    def disp(self, other: Vec3) -> Vec3:
-        diff = self.vec3 - other.vec3
-        return diff
-    
-    #Combine two 3D vectors -- for changing velocity
-    def add(self, other: Vec3) -> Vec3:
-        new = self.vec3 + other.vec3
-        return new
-    
-    def angle_between(self, other: Vec3)-> Vec3:
-        vec = (self.vec3 - other.vec3)
-        mag = np.ones(3)*np.linalg.norm(vec)
-        ang = np.divide(vec, mag)
-        return ang  
-    
-x= Vec3(1,0,0)
-y = Vec3(0,1,0)
 
-print(x.vec3)
-print(y.vec3)
-print("Angle between is:", Vec3.angle_between(x,y),f"/n Added they are:", Vec3.add(x,y), f"/n And their displacement is:", Vec3.disp(x,y))
+from math import pi, atan2, sin, cos, sqrt
+
+def forcfunc(d:float, a:float, c1:bool, c2:bool, m, cutoff_dist: float) -> float:
+    
+    #No force is far enough away
+    if d > cutoff_dist:
+        return 0,0
+    
+    #No force if same particle
+    elif(d == 0):
+        return 0, 0
+    
+    else: 
+        #Calculate Strength of force
+        f = 9000/(d**2)
+        ax = f*cos(a)/m
+        ay = f*sin(a)/m
+        
+        #Check if particles repel or attract
+        if c1 != c2:
+            return ax, ay
+        elif c1 == c2: 
+            return -ax, -ay 
+    
+def anglefunc(x,y)-> float: #Finds angle between points based on x-diff and y-diff
+    if(x == 0 and y >=0):
+        return pi/2
+    elif( x==0 and y < 0):
+        return 3*pi/2
+    else:
+        ang_temp = atan2(y,x)
+       # if ang_temp < 0:
+        #    ang_fin = 2*pi - ang_temp
+        #else:
+         #   ang_fin = ang_temp
+        print(ang_temp)
+        return ang_temp
+    
+print(forcfunc(sqrt(73),anglefunc(8,3),False,True,1,100))

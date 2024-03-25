@@ -21,14 +21,11 @@ def forcfunc(d:float, a:float, c1:bool, c2:bool, m, cutoff_dist: float) -> float
         ax = f*cos(a)/m
         ay = f*sin(a)/m
         
-        if d < 1.1*params.PARTICLE_RADIUS:
-            return -ax*params.REPULSION_STRENGTH/(2*d-params.PARTICLE_RADIUS), -ay*params.REPULSION_STRENGTH/(2*d- params.PARTICLE_RADIUS)
-        
         #Check if particles repel or attract
-        elif c1 == c2:
-            return ax, ay
-        else: 
-            return -ax, -ay 
+        if c1 != c2:
+            return -ax, -ay
+        elif c1 == c2: 
+            return ax, ay 
     
 def anglefunc(x,y)-> float: #Finds angle between points based on x-diff and y-diff
     if(x == 0 and y >=0):
@@ -70,14 +67,15 @@ class Particle:
         self.c = bool(random.getrandbits(1))
         self.loc = loc
         self.vel = vel
+        
           
     def interact(self, other: Particle, cutoff_dist:float):
         x_diff = self.loc.x - other.loc.x
         y_diff = self.loc.y - other.loc.y
         disp = sqrt(abs(x_diff)**2 + abs(y_diff)**2)
         if disp < 0.9*params.PARTICLE_RADIUS:
-            ax = params.REPULSION_STRENGTH*x_diff
-            ay = params.REPULSION_STRENGTH*y_diff
+            ax = params.REPULSION_STRENGTH*x_diff/params.MASS
+            ay = params.REPULSION_STRENGTH*y_diff/params.MASS
             return ax, ay 
         else:
             cut = cutoff_dist
@@ -95,7 +93,7 @@ class Particle:
         
         #Sum acceleration from each other particle
         for i in range(0,num_part):
-            sing_ax, sing_ay= self.interact(population[i],params.CUTOFF_DIST) 
+            sing_ax, sing_ay= self.interact(population[i], params.CUTOFF_DIST) 
             
             ax_tot += sing_ax
             ay_tot += sing_ay
@@ -103,8 +101,8 @@ class Particle:
         #Change location based on current velocity with change in acceleration over our TIME_STEP param
         self.vel.x = self.vel.x + ax_tot*params.TIME_STEP
         self.vel.y = self.vel.y + ay_tot*params.TIME_STEP
-        self.loc.x = self.vel.x*params.TIME_STEP
-        self.loc.y = self.vel.y*params.TIME_STEP
+        self.loc.x = self.loc.x + self.vel.x*params.TIME_STEP
+        self.loc.y = self.loc.y + self.vel.y*params.TIME_STEP
         
     #Colour depending on Charge
     def color(self) -> str:
@@ -121,34 +119,19 @@ class Simulation:
     #Initialize Population with random locations and velocities
     def __init__(self, particles: int) -> None:
         self.population = []
-        for n in range(0, particles):
-            init_loc = self.random_loc()
-            init_vel = self.random_vel()
+        for _ in range(0, particles):
+            init_loc = Point((random.random()-0.5)*params.BOUNDS_WIDTH, (random.random()-0.5)*params.BOUNDS_HEIGHT)
+            init_vel = Point((random.random()-0.5)*params.MAX_SPEED,(random.random()-0.5)*params.MAX_SPEED)
             temp: Particle = Particle(init_loc, init_vel, params.MASS)
             self.population.append(temp)
-    
+        
     #ADVANCE TIME, cause tick update for each particle
     def tick(self):
         self.time += 1
         for particle in self.population:
-            particle.tick(self.population, len(self.population))
+            particle.tick(self.population, params.PARTICLE_COUNT)
             self.boundary_lim(particle)
         
-    #RANDOM START LOCATION
-    def random_loc(self) -> Point:
-        x = random.random()*params.BOUNDS_WIDTH - params.MAX_X
-        y = random.random()*params.BOUNDS_HEIGHT - params.MAX_Y
-        
-        return Point(x, y)
-    
-    #RANDOM START VELOCITY
-    @staticmethod
-    def random_vel(x=None) -> Point:
-        if x is None:
-            
-            x_vel = (random.random()-0.5)*params.MAX_SPEED
-            y_vel = (random.random()-0.5)*params.MAX_SPEED
-        return Point(x_vel, y_vel)
     
     #Bounces off boundaries
     def boundary_lim(self, particle: Particle):
