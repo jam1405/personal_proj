@@ -36,6 +36,14 @@ class Vec3():
         ang = np.divide(vec, mag)
         return ang  
     
+    def scal_mult(scal:float,vec:Vec3):
+        newx = scal*vec.x
+        newy = scal*vec.y
+        newz = scal*vec.z
+        newvec = Vec3(newx,newy,newz)
+        return newvec
+    
+    
 class Body():
     
     #initalize mass, radius, positions and velocity
@@ -47,21 +55,25 @@ class Body():
         self.vel = vel
 
     #Gravitational interactions with other planets
-    def interact(self, bodies: list) -> Vec3:
+    def interact(self, bodies: list[Body]) -> Vec3:
         grav_force_tot:Vec3 = Vec3(0,0,0)
+        
+        #interact self with all other bodies in list
         for body in bodies:
-            grav_force_mag_temp: float = params.cos_const*body.m/(Vec3.dist(self.pos, body.pos)**2)
-            grav_force_dir_temp: Vec3 = Vec3.angle_between(self.pos,body.pos)
-            grav_force_vec_temp: Vec3 = grav_force_mag_temp*grav_force_dir_temp
-            grav_force_tot.add(grav_force_vec_temp)
+           #If same body, return a force of 0
+            if body.name == self.name:
+                grav_force_tot.add(Vec3(0,0,0))
+            else:
+                #grav_accel = G*m/r^2
+                grav_force_mag_temp: float = params.cos_const*body.m/(Vec3.dist(self.pos, body.pos)**2)
+                grav_force_dir_temp: Vec3 = Vec3.angle_between(self.pos,body.pos)
+                grav_force_vec_temp: Vec3 = Vec3.scal_mult(grav_force_mag_temp,grav_force_dir_temp)
+                grav_force_tot.add(grav_force_vec_temp)
         
-        #mass factor removed from grav force to indicated acceleration
-        return grav_force_tot
+        #update new velocity and then update position
+        self.vel = Vec3.add(self.vel, grav_force_tot)
+        self.pos = Vec3.add(self.pos, Vec3.scal_mult(params.time_step,self.vel))
     
-    def tick(self):
-    
-        
-        self.pos = Vec3.add(self.pos, params.time_step*Body.interact())
 class Simulation:
     
     #Initializing celestial body datasets. Position will be stored as Vec3. Names , masses and radii in lists
@@ -76,12 +88,21 @@ class Simulation:
     def __init__(self, bodies: list) -> None:
         self.time: int = 0
         self.bodies: list[Body] = []
-        
+        self.finished = False
         for i in range(0,len(bodies)):
             self.bodies.append(Body(bodies[i,0],bodies[i,1],bodies[i,2],Vec3(bodies[i,3],bodies[i,4],bodies[i,5]),Vec3(bodies[i,6],bodies[i,7],bodies[i,8])))
     
     #Each planet updating 
     def tick(self) -> None:
         self.time += 1
-        for body in self.bodies:
-            body.interact(self.bodies)
+        if self.time >= params.simtime:
+            self.finished = True
+        
+        if self.finished:
+            #STOP SIMULATION
+            abc =1
+            
+        else:
+            #call a body to interact with all others
+            for body in self.bodies:
+                body.interact(self.bodies)

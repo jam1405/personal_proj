@@ -8,19 +8,20 @@ CAMERA_DISTANCE : float = 100
 g = 8.196655424*10**(-26) #M_earth*AU/day^2
 time_step = 0.5 #days
 cos_const = 1.1904*10**(-19)
+simtime:int = 1000
 
 #Celestial body data lists in units described above
 #form of: [name str, mass float, display_radius float, x_initial, y_initial, z_initial floats, x,y,z init Vels]
-sun_data:list = ["Sun",]
-merc_data:list = ["Mercury",]
-ven_data:list = ["Venus",]
-ear_data:list = ["Earth",]
-mars_data:list = ["Mars",]
-jup_data:list = ["Jupiter",]
-sat_data:list = ["Saturn",]
-uran_data:list = ["Uranus",]
-nept_data:list =["Neptune",]
-plut_data:list = ["Pluto",]
+sun_data:list = ["Sun",332959.9, 1 , 0,0,0,0,0,0]
+merc_data:list = ["Mercury",0.055, 1]
+ven_data:list = ["Venus",0.815, 1]
+ear_data:list = ["Earth",1.0, 1]
+mars_data:list = ["Mars",0.107, 1]
+jup_data:list = ["Jupiter",317.81, 1]
+sat_data:list = ["Saturn", 95.11, 1]
+uran_data:list = ["Uranus", 14.53, 1]
+nept_data:list =["Neptune",17.08, 1]
+plut_data:list = ["Pluto", 0.00218, 1]
 
 
 #List of Bodies for input
