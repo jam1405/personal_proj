@@ -1,0 +1,3 @@
+-find a way to signal simulation completion
+-write visualizer to first create a 3d graph, and then reapply the coordinates as time evolves
+-test that the planet locations are being properly imported

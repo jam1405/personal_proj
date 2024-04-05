@@ -65,14 +65,14 @@ class Body():
                 grav_force_tot.add(Vec3(0,0,0))
             else:
                 #grav_accel = G*m/r^2
-                grav_force_mag_temp: float = params.cos_const*body.m/(Vec3.dist(self.pos, body.pos)**2)
-                grav_force_dir_temp: Vec3 = Vec3.angle_between(self.pos,body.pos)
+                grav_force_mag_temp: float = params.cos_const*body.m/(self.pos.dist(body.pos)**2)
+                grav_force_dir_temp: Vec3 = self.pos.angle_between(body.pos)
                 grav_force_vec_temp: Vec3 = Vec3.scal_mult(grav_force_mag_temp,grav_force_dir_temp)
                 grav_force_tot.add(grav_force_vec_temp)
         
         #update new velocity and then update position
-        self.vel = Vec3.add(self.vel, grav_force_tot)
-        self.pos = Vec3.add(self.pos, Vec3.scal_mult(params.time_step,self.vel))
+        self.vel = self.vel.add(Vec3.scal_mult(params.time_step, grav_force_tot))
+        self.pos = self.pos.add(Vec3.scal_mult(params.time_step,self.vel))
     
 class Simulation:
     
@@ -84,11 +84,13 @@ class Simulation:
     #Initialize time
     time: float = 0
     
-    #The Planets list is grouped at first index being different planets, and second index being: 0-name, 1->mass, 2->radius, 3,4,5 -> x,y,z locations, 6,7,8 -> init vel
+    #The Planets list is grouped at first index being different bodies, and second index being: 0-name, 1->mass, 2->display radius, 3,4,5 -> x,y,z locations, 6,7,8 -> init vel
     def __init__(self, bodies: list) -> None:
         self.time: int = 0
         self.bodies: list[Body] = []
+        
         self.finished = False
+        
         for i in range(0,len(bodies)):
             self.bodies.append(Body(bodies[i,0],bodies[i,1],bodies[i,2],Vec3(bodies[i,3],bodies[i,4],bodies[i,5]),Vec3(bodies[i,6],bodies[i,7],bodies[i,8])))
     
@@ -100,7 +102,7 @@ class Simulation:
         
         if self.finished:
             #STOP SIMULATION
-            abc =1
+            s = 1
             
         else:
             #call a body to interact with all others
