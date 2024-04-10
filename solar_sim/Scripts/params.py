@@ -6,9 +6,10 @@ CAMERA_DISTANCE : float = 100
 #Units of Distance are AU, and mass is Earth Masses, time is in days
 
 g = 8.196655424*10**(-26) #M_earth*AU/day^2
-time_step = 0.5 #days
+time_step = 0.1 #days
 cos_const = 1.1904*10**(-19)
 simtime:int = 1000
+ticks:int = simtime/time_step
 
 #Celestial body data lists in units described above
 #form of: [name str, mass float, display_radius float, x_initial, y_initial, z_initial floats, x,y,z init Vels]

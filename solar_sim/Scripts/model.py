@@ -53,6 +53,8 @@ class Body():
         self.r = radius #PLANET RADIUS WILL HAVE TO BE DRASTICALLY HIGHER THAN REALITY TO BE VISIBLE
         self.pos = pos
         self.vel = vel
+        self.poslist: list[Vec3] = []
+    
 
     #Gravitational interactions with other planets
     def interact(self, bodies: list[Body]) -> Vec3:
@@ -71,6 +73,7 @@ class Body():
                 grav_force_tot.add(grav_force_vec_temp)
         
         #update new velocity and then update position
+        self.poslist.append(self.pos)
         self.vel = self.vel.add(Vec3.scal_mult(params.time_step, grav_force_tot))
         self.pos = self.pos.add(Vec3.scal_mult(params.time_step,self.vel))
     
