@@ -1,11 +1,7 @@
-import matplotlib.pyplot as plt
-import numpy as np
+m = 6.685
+n = 5.972
+b = 1.157
 
-x = np.linspace(0,100,100)
-y = np.linspace(0,100,100)
-
-x2 = np.linspace(0,200,100)
-
-plt.plot(x,y)
-plt.plot(x2,y)
-plt.show()
+prod = (m**3)*(5.972)/(1.157**2)
+print (prod)
+print("Hello {abc} \%".format(abc = "HAHA"))

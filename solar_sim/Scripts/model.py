@@ -47,13 +47,14 @@ class Vec3():
 class Body():
     
     #initalize mass, radius, positions and velocity
-    def __init__(self, name: str, mass:float, radius:float, pos : Vec3 , vel :Vec3) -> None:
+    def __init__(self, name: str, mass:float, radius:float, pos : Vec3 , vel :Vec3, col:str) -> None:
         self.name = name
         self.m = mass
         self.r = radius #PLANET RADIUS WILL HAVE TO BE DRASTICALLY HIGHER THAN REALITY TO BE VISIBLE
         self.pos = pos
         self.vel = vel
-        self.poslist: list[Vec3] = []
+        self.colour = col
+        
     
 
     #Gravitational interactions with other planets
@@ -67,13 +68,13 @@ class Body():
                 grav_force_tot.add(Vec3(0,0,0))
             else:
                 #grav_accel = G*m/r^2
-                grav_force_mag_temp: float = params.cos_const*body.m/(self.pos.dist(body.pos)**2)
+                grav_force_mag_temp: float = params.grav_const*body.m/(self.pos.dist(body.pos)**2)
                 grav_force_dir_temp: Vec3 = self.pos.angle_between(body.pos)
                 grav_force_vec_temp: Vec3 = Vec3.scal_mult(grav_force_mag_temp,grav_force_dir_temp)
                 grav_force_tot.add(grav_force_vec_temp)
         
         #update new velocity and then update position
-        self.poslist.append(self.pos)
+        
         self.vel = self.vel.add(Vec3.scal_mult(params.time_step, grav_force_tot))
         self.pos = self.pos.add(Vec3.scal_mult(params.time_step,self.vel))
     
@@ -89,25 +90,23 @@ class Simulation:
     
     #The Planets list is grouped at first index being different bodies, and second index being: 0-name, 1->mass, 2->display radius, 3,4,5 -> x,y,z locations, 6,7,8 -> init vel
     def __init__(self, bodies: list) -> None:
-        self.time: int = 0
-        self.bodies: list[Body] = []
         
-        self.finished = False
+        self.bodies: list[Body] = []
+        self.poslist :list[list[Vec3]] = []
+        self.bodycount = len(bodies)
         
         for i in range(0,len(bodies)):
-            self.bodies.append(Body(bodies[i,0],bodies[i,1],bodies[i,2],Vec3(bodies[i,3],bodies[i,4],bodies[i,5]),Vec3(bodies[i,6],bodies[i,7],bodies[i,8])))
+            self.bodies.append(Body(bodies[i,0],bodies[i,1],bodies[i,2],Vec3(bodies[i,3],bodies[i,4],bodies[i,5]),Vec3(bodies[i,6],bodies[i,7],bodies[i,8]), bodies[i,9]))
     
     #Each planet updating 
     def tick(self) -> None:
-        self.time += 1
-        if self.time >= params.simtime:
-            self.finished = True
         
-        if self.finished:
-            #STOP SIMULATION
-            s = 1
+        temp_poslist:list[Vec3] = []
             
-        else:
-            #call a body to interact with all others
-            for body in self.bodies:
-                body.interact(self.bodies)
+        #call a body to interact with all others and store new positions in a list
+        for body in self.bodies:
+            body.interact(self.bodies)
+            temp_poslist.append(body.pos)
+            
+        #after storing new positions for a tick, add to a total list for visualization purposes
+        self.poslist.append(temp_poslist)
