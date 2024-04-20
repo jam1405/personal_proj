@@ -1,7 +1,7 @@
-m = 6.685
-n = 5.972
-b = 1.157
 
-prod = (m**3)*(5.972)/(1.157**2)
-print (prod)
-print("Hello {abc} \%".format(abc = "HAHA"))
+import numpy as np
+n = np.zeros((3,3))
+m = np.array([[1,2,3],[4,5,6],[7,8,9]])
+x = n+m
+print(m)
+print(x)

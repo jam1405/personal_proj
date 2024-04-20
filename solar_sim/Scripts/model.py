@@ -3,7 +3,7 @@ import params
 import numpy as np
 
 #3D Vector Class outputting a numpy 3x1 array
-class Vec3():
+class Vec3(np.ndarray):
     def __init__(self, x:float , y:float, z:float) -> None:
         self.x = x
         self.y = y
@@ -13,20 +13,16 @@ class Vec3():
     
     #Find displacement (3d vec) between 3D vectors -- for finding displacement between planets
     def disp(self, other: Vec3):
-        diff = self.vec3 - other.vec3
+        diff = self - other
         return diff
     
     #Find distance (scalar) betwen 2 3D vectors
     def dist(self, other: Vec3) -> float:
-        return np.linalg.norm(self.vec3-other.vec3)        
+        return np.linalg.norm(self-other)        
     
     #Combine two 3D vectors -- for changing velocity
     def add(self, other: Vec3):
-        newx = self.x + other.x
-        newy = self.y + other.y
-        newz = self.z + other.z
-        
-        newvec = Vec3(newx,newy,newz)
+        newvec = self.vec3 + other.vec3
         return newvec
     
     #Angle from point self --> point other
@@ -35,14 +31,7 @@ class Vec3():
         mag = np.ones(3)*np.linalg.norm(vec)
         ang = np.divide(vec, mag)
         return ang  
-    
-    def scal_mult(scal:float,vec:Vec3):
-        newx = scal*vec.x
-        newy = scal*vec.y
-        newz = scal*vec.z
-        newvec = Vec3(newx,newy,newz)
-        return newvec
-    
+
     
 class Body():
     
@@ -70,7 +59,7 @@ class Body():
                 #grav_accel = G*m/r^2
                 grav_force_mag_temp: float = params.grav_const*body.m/(self.pos.dist(body.pos)**2)
                 grav_force_dir_temp: Vec3 = self.pos.angle_between(body.pos)
-                grav_force_vec_temp: Vec3 = Vec3.scal_mult(grav_force_mag_temp,grav_force_dir_temp)
+                grav_force_vec_temp: Vec3 = grav_force_dir_temp*grav_force_mag_temp
                 grav_force_tot.add(grav_force_vec_temp)
         
         #update new velocity and then update position
@@ -96,7 +85,7 @@ class Simulation:
         self.bodycount = len(bodies)
         
         for i in range(0,len(bodies)):
-            self.bodies.append(Body(bodies[i,0],bodies[i,1],bodies[i,2],Vec3(bodies[i,3],bodies[i,4],bodies[i,5]),Vec3(bodies[i,6],bodies[i,7],bodies[i,8]), bodies[i,9]))
+            self.bodies.append(Body(bodies[i][0],bodies[i][1],bodies[i][2],Vec3(bodies[i][3],bodies[i][4],bodies[i][5]),Vec3(bodies[i][6],bodies[i][7],bodies[i][8]), bodies[i][9]))
     
     #Each planet updating 
     def tick(self) -> None:

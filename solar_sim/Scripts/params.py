@@ -8,7 +8,7 @@ CAMERA_DISTANCE : float = 100
 
 time_step = 0.1 #days
 grav_const = 13.327764 #AU^3/day^2*M_ear
-simtime:int = 1000
+simtime:int = 1
 ticks:int = int(simtime//time_step)
 
 #Celestial body data lists in units described above
