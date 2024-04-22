@@ -64,8 +64,8 @@ class Body():
         
         #update new velocity and then update position
         
-        self.vel = self.vel.add(Vec3.scal_mult(params.time_step, grav_force_tot))
-        self.pos = self.pos.add(Vec3.scal_mult(params.time_step,self.vel))
+        self.vel = self.vel.add(params.time_step*grav_force_tot)
+        self.pos = self.pos.add(params.time_step*self.vel)
     
 class Simulation:
     
@@ -78,10 +78,12 @@ class Simulation:
     time: float = 0
     
     #The Planets list is grouped at first index being different bodies, and second index being: 0-name, 1->mass, 2->display radius, 3,4,5 -> x,y,z locations, 6,7,8 -> init vel
-    def __init__(self, bodies: list) -> None:
-        
+    def __init__(self, bodies: list[list]) -> None:
+       
+       #WIP --> SWITCHING TO ARRAYS
+        init_array = np.array(bodies)
         self.bodies: list[Body] = []
-        self.poslist :list[list[Vec3]] = []
+        self.poslist :np.ndarray = init_array[:,3:5]
         self.bodycount = len(bodies)
         
         for i in range(0,len(bodies)):

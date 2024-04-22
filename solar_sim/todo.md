@@ -1,5 +1,9 @@
--find a way to signal simulation completion
--write visualizer to first create a 3d graph, and then reapply the coordinates as time evolves
+
+
 -test that the planet locations are being properly imported
 -time counter in top of sim
 -planet labels on graph
+
+CURRENT
+-switch from lists of lists to arrays for ease of splicing
+-enable figure saving to preserve past arrangements of array
